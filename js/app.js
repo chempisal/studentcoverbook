@@ -1166,6 +1166,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   const modalTwoSubjectsA4 = document.getElementById('modal-two-subjects-a4');
   const btnExport2SubjectsA4Card = document.getElementById('btn-export-2subjects-a4-card');
   const selectPrintMode = document.getElementById('select-print-mode');
+  const selectA4FrameSource = document.getElementById('select-a4-frame-source');
+  const btnA4FrameUpload = document.getElementById('btn-a4-frame-upload');
+  const inputA4FrameUpload = document.getElementById('input-a4-frame-upload');
+  const boxA4FrameStatus = document.getElementById('box-a4-frame-status');
   const selectPrintMargin = document.getElementById('select-print-margin');
   const checkPrintCutline = document.getElementById('check-print-cutline');
   const boxCustom2SubControls = document.getElementById('box-custom-2sub-controls');
@@ -1183,12 +1187,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   const printStudioState = {
     mode: 'all-12', // 'all-12', 'custom-2', 'students-batch', 'current-single'
     currentSheetIndex: 0,
-    margin: 8,
+    margin: 0, // 0mm by default for 100% Full A5 size!
     showCutLine: true,
     sub1Id: 'khmer',
     sub2Id: 'dictation',
     sub1Text: null,
-    sub2Text: null
+    sub2Text: null,
+    frameSource: 'custom' // 'custom', 'canvas', 'preset'
   };
 
   function getTotalSheets() {
@@ -1212,6 +1217,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       return {
         sub1Id: curSheet.sub1,
         sub2Id: curSheet.sub2,
+        frameSource: printStudioState.frameSource === 'custom' && engine.state.customFrame && engine.state.customFrame.src ? 'custom' : null,
         margin: marginMm,
         showCutLine: showCutLine,
         title: `Sheet-${curSheet.sheetNum}-${curSheet.sub1}-${curSheet.sub2}`
@@ -1224,6 +1230,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         sub2Id: printStudioState.sub2Id,
         sub1Text: printStudioState.sub1Text,
         sub2Text: printStudioState.sub2Text,
+        frameSource: printStudioState.frameSource || 'custom',
         margin: marginMm,
         showCutLine: showCutLine,
         title: `Custom-${printStudioState.sub1Id}-${printStudioState.sub2Id}`
@@ -1292,6 +1299,45 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Prev / Next button states
     if (btnA4PrevPage) btnA4PrevPage.disabled = printStudioState.currentSheetIndex <= 0;
     if (btnA4NextPage) btnA4NextPage.disabled = printStudioState.currentSheetIndex >= total - 1;
+
+    // Frame Status in Custom 2 Mode
+    if (boxA4FrameStatus) {
+      const hasCustom = !!(engine.state.customFrame && engine.state.customFrame.src);
+      const activeSource = printStudioState.frameSource || 'custom';
+
+      if (activeSource === 'custom') {
+        if (hasCustom) {
+          boxA4FrameStatus.innerHTML = `
+            <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 6px; padding: 6px 10px;">
+              <div style="display: flex; align-items: center; gap: 8px; color: #34d399; font-weight: 600;">
+                <span style="font-size: 14px;">✅</span>
+                <span>កំពុងប្រើ ៖ <strong>ស៊ុម Upload ពី PC</strong> (អនុវត្តលើក្របទាំង ២ ឆ្វេង-ស្ដាំ)</span>
+              </div>
+              <img src="${engine.state.customFrame.src}" style="width: 22px; height: 30px; object-fit: contain; border: 1.5px solid #10b981; border-radius: 3px; background: rgba(0,0,0,0.5);" alt="Custom Frame" />
+            </div>
+          `;
+        } else {
+          boxA4FrameStatus.innerHTML = `
+            <div style="width: 100%; background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 6px; padding: 6px 10px; color: #fbbf24; font-weight: 500; display: flex; align-items: center; gap: 6px;">
+              <span style="font-size: 14px;">⚠️</span>
+              <span>មិនទាន់មានរូបស៊ុម Upload ទេ — សូមចុចប៊ូតុង <strong>"Upload ស៊ុមពី PC"</strong> ខាងលើដើម្បីបញ្ចូលស៊ុមផ្ទាល់ខ្លួនភ្លាមៗ!</span>
+            </div>
+          `;
+        }
+      } else if (activeSource === 'canvas') {
+        boxA4FrameStatus.innerHTML = `
+          <div style="width: 100%; background: rgba(59, 130, 246, 0.12); border: 1px solid rgba(59, 130, 246, 0.35); border-radius: 6px; padding: 6px 10px; color: #93c5fd; font-weight: 500;">
+            🎨 កំពុងប្រើ ៖ ស៊ុមបច្ចុប្បន្នលើ Canvas (<em>${engine.state.frameStyle || 'ស្តង់ដារ'}</em>)
+          </div>
+        `;
+      } else {
+        boxA4FrameStatus.innerHTML = `
+          <div style="width: 100%; background: rgba(148, 163, 184, 0.12); border: 1px solid rgba(148, 163, 184, 0.35); border-radius: 6px; padding: 6px 10px; color: #cbd5e1; font-weight: 500;">
+            ✨ កំពុងប្រើ ៖ ស៊ុមតាមគំរូមុខវិជ្ជានីមួយៗ (Presets)
+          </div>
+        `;
+      }
+    }
 
     // Footer note text
     if (txtPrintFooterNote) {
@@ -1362,6 +1408,16 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
     }
 
+    // Set frame source default: prioritize custom uploaded frame if available
+    if (engine.state.customFrame && engine.state.customFrame.src) {
+      printStudioState.frameSource = 'custom';
+    } else if (engine.state.frameStyle === 'custom') {
+      printStudioState.frameSource = 'custom';
+    }
+    if (selectA4FrameSource) {
+      selectA4FrameSource.value = printStudioState.frameSource;
+    }
+
     // Set initial form control values
     if (selectPrintMode) selectPrintMode.value = printStudioState.mode;
     if (selectPrintMargin) selectPrintMargin.value = String(printStudioState.margin);
@@ -1385,7 +1441,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   if (selectPrintMargin) {
     selectPrintMargin.addEventListener('change', () => {
-      printStudioState.margin = parseInt(selectPrintMargin.value) || 8;
+      printStudioState.margin = parseInt(selectPrintMargin.value, 10) || 0;
       updatePrintStudioUI();
     });
   }
@@ -1466,6 +1522,39 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
+  // Frame Source & Upload Event Listeners
+  if (selectA4FrameSource) {
+    selectA4FrameSource.addEventListener('change', () => {
+      printStudioState.frameSource = selectA4FrameSource.value;
+      updatePrintStudioUI();
+    });
+  }
+
+  if (btnA4FrameUpload && inputA4FrameUpload) {
+    btnA4FrameUpload.addEventListener('click', () => {
+      inputA4FrameUpload.click();
+    });
+
+    inputA4FrameUpload.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          engine.state.customFrame.src = ev.target.result;
+          engine.state.customFrame.visible = true;
+          engine.setFrameStyle('custom');
+          if (typeof renderFramesGrid === 'function') {
+            renderFramesGrid();
+          }
+          printStudioState.frameSource = 'custom';
+          if (selectA4FrameSource) selectA4FrameSource.value = 'custom';
+          updatePrintStudioUI();
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+
   // Print Now Primary Action
   if (btnPrintNowPrimary) {
     btnPrintNowPrimary.addEventListener('click', () => {
@@ -1480,7 +1569,8 @@ document.addEventListener('DOMContentLoaded', async () => {
           sub1Id: printStudioState.sub1Id,
           sub2Id: printStudioState.sub2Id,
           sub1Text: printStudioState.sub1Text,
-          sub2Text: printStudioState.sub2Text
+          sub2Text: printStudioState.sub2Text,
+          frameSource: printStudioState.frameSource
         });
       } catch (err) {
         alert('កំហុសពេលបោះពុម្ព៖ ' + err.message);

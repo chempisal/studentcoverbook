@@ -1011,7 +1011,7 @@ class BookCoverCanvasEngine {
     else if (style === 'custom' && this.state.customFrame.visible && this.state.customFrame.src) {
       // 12. Custom Uploaded Frame Image
       html += `
-        <image href="${this.state.customFrame.src}" x="0" y="0" width="${w}" height="${h}" 
+        <image href="${this.state.customFrame.src}" xlink:href="${this.state.customFrame.src}" x="0" y="0" width="${w}" height="${h}" 
                preserveAspectRatio="none" opacity="${this.state.customFrame.opacity}" />
       `;
     } else {

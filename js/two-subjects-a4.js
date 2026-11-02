@@ -31,7 +31,7 @@ const TwoSubjectsA4Manager = {
     { id: 'it-sport', name: 'ព័ត៌មានវិទ្យា + កីឡា', sub1: 'ict', sub2: 'sport' }
   ],
 
-  createSubjectState(baseState, subjectId, customSubjectText = null) {
+  createSubjectState(baseState, subjectId, customSubjectText = null, frameOverride = null) {
     const state = JSON.parse(JSON.stringify(baseState));
     const allSubjects = typeof SubjectPresetsManager !== 'undefined' ? SubjectPresetsManager.getAll() : [];
     const preset = allSubjects.find(s => s.id === subjectId) || allSubjects[0];
@@ -39,8 +39,41 @@ const TwoSubjectsA4Manager = {
     if (!preset) return state;
 
     state.presetId = preset.id;
-    if (preset.frameStyle) state.frameStyle = preset.frameStyle;
-    if (preset.bgGradient) state.bgGradient = preset.bgGradient;
+
+    // Resolve Frame Style:
+    // User requirement: "ត្រង់នេះគឺស៊ុមយកតាមដែលយើងបានបានupload ចូល"
+    // If user has uploaded a custom frame (or selected it), it must take precedence!
+    const hasCustomUploadedFrame = !!(baseState.customFrame && baseState.customFrame.src);
+
+    if (frameOverride === 'custom' || (!frameOverride && (baseState.frameStyle === 'custom' || hasCustomUploadedFrame))) {
+      state.frameStyle = 'custom';
+      if (baseState.customFrame) {
+        state.customFrame = JSON.parse(JSON.stringify(baseState.customFrame));
+        state.customFrame.visible = true;
+      }
+    } else if (frameOverride === 'canvas') {
+      state.frameStyle = baseState.frameStyle;
+      if (baseState.customFrame) {
+        state.customFrame = JSON.parse(JSON.stringify(baseState.customFrame));
+      }
+    } else if (frameOverride === 'preset') {
+      if (preset.frameStyle) state.frameStyle = preset.frameStyle;
+    } else if (typeof frameOverride === 'string' && frameOverride.length > 0) {
+      state.frameStyle = frameOverride;
+      if (frameOverride === 'custom' && baseState.customFrame) {
+        state.customFrame = JSON.parse(JSON.stringify(baseState.customFrame));
+        state.customFrame.visible = true;
+      }
+    } else {
+      if (preset.frameStyle) state.frameStyle = preset.frameStyle;
+    }
+
+    // Keep custom background if user has custom image or frame
+    if (state.frameStyle !== 'custom' && frameOverride === 'preset') {
+      if (preset.bgGradient) state.bgGradient = preset.bgGradient;
+    } else if (!hasCustomUploadedFrame && preset.bgGradient) {
+      state.bgGradient = preset.bgGradient;
+    }
 
     if (preset.defaultColors) {
       if (preset.defaultColors.schoolName && state.layers.schoolName) {
@@ -88,7 +121,6 @@ const TwoSubjectsA4Manager = {
 
     return state;
   },
-
   renderCoverWithPrefix(state, prefix = 'c1') {
     const dummy = document.createElement('div');
     const tempEngine = new BookCoverCanvasEngine(dummy);
@@ -139,38 +171,42 @@ const TwoSubjectsA4Manager = {
     const sub2Id = options.sub2Id || 'dictation';
     const sub1Text = options.sub1Text || null;
     const sub2Text = options.sub2Text || null;
-    const marginMm = typeof options.margin === 'number' ? options.margin : (parseInt(options.margin) || 8);
+    // Margin parsing (default 0 for 100% Full A5 size)
+    let marginMm = 0;
+    if (options.margin !== undefined && options.margin !== null) {
+      marginMm = typeof options.margin === 'number' ? options.margin : (parseInt(options.margin, 10) || 0);
+    }
     const showCutLine = options.showCutLine !== false;
 
-    // ISO A4 Landscape dimensions: 1754 x 1240 (proportional to 297mm x 210mm)
+    // ISO A4 Landscape dimensions: 1754 x 1240 (Exact 297mm x 210mm at high precision)
     const a4W = 1754;
     const a4H = 1240;
 
-    // Margin factor in SVG pixels (approx 1mm ~ 5.9px at 1754/297)
-    const pxPerMm = a4W / 297.0; // ~ 5.905
+    // Margin factor in SVG pixels (approx 1mm ~ 5.9057px at 1754/297)
+    const pxPerMm = a4W / 297.0; // ~ 5.9057
     const marginPx = Math.round(marginMm * pxPerMm);
 
-    // Each half sheet width: 1754 / 2 = 877
-    const halfW = a4W / 2; // 877
-    const halfH = a4H;     // 1240
+    // Each half sheet is EXACT ISO A5 Portrait: 148.5mm x 210mm (877px x 1240px)
+    const halfW = Math.round(a4W / 2); // 877
+    const halfH = a4H;                 // 1240
 
-    // Available size for cover inside each half
-    const availW = halfW - marginPx * 2;
-    const availH = halfH - marginPx * 2;
+    // Available size for cover inside each A5 half
+    const availW = Math.max(100, halfW - marginPx * 2);
+    const availH = Math.max(100, halfH - marginPx * 2);
 
-    // Fit cover (600x850) inside availW x availH
-    // Safe scaling ensures nothing gets clipped at top, bottom, or edges
-    const scale = Math.min(availW / 600, availH / 850) * 0.92;
-    const coverW = 600 * scale;
-    const coverH = 850 * scale;
+    // Scale cover (600x850) to fully fit each A5 half (877x1240)
+    // When margin is 0, each cover fills 100% of its A5 half-sheet with zero gap!
+    const scaleX = availW / 600;
+    const scaleY = availH / 850;
 
-    // Center cover 1 in left half
-    const x1 = Math.round((halfW - coverW) / 2);
-    const y1 = Math.round((halfH - coverH) / 2);
+    // Coordinates inside each A5 half
+    const x1 = marginPx;
+    const y1 = marginPx;
 
-    // Center cover 2 in right half
-    const x2 = Math.round(halfW + (halfW - coverW) / 2);
-    const y2 = y1;
+    const x2 = halfW + marginPx;
+    const y2 = marginPx;
+
+    const frameSource = options.frameSource || (options.mode === 'custom-2' ? 'custom' : null);
 
     // Prepare states
     let state1, state2;
@@ -178,8 +214,8 @@ const TwoSubjectsA4Manager = {
       state1 = options.customState1;
       state2 = options.customState2;
     } else {
-      state1 = this.createSubjectState(engine.state, sub1Id, sub1Text);
-      state2 = this.createSubjectState(engine.state, sub2Id, sub2Text);
+      state1 = this.createSubjectState(engine.state, sub1Id, sub1Text, frameSource);
+      state2 = this.createSubjectState(engine.state, sub2Id, sub2Text, frameSource);
     }
 
     if (options.studentName) {
@@ -212,15 +248,15 @@ const TwoSubjectsA4Manager = {
         <!-- Pure White A4 Canvas Sheet -->
         <rect width="${a4W}" height="${a4H}" fill="#ffffff" />
 
-        <!-- Left Slot Cover -->
-        <g id="a4-slot-left" transform="translate(${x1}, ${y1}) scale(${scale})">
+        <!-- Left Slot Cover (Fills Left A5 sheet 148.5mm x 210mm) -->
+        <g id="a4-slot-left" transform="translate(${x1}, ${y1}) scale(${scaleX}, ${scaleY})">
           ${c1.body}
         </g>
 
         <!-- Middle Vertical Scissor Cut Guide Line (Red Dashed) -->
         ${showCutLine ? `
           <g id="a4-cut-guide-vertical" transform="translate(${halfW}, 0)">
-            <line x1="0" y1="20" x2="0" y2="${a4H - 20}" stroke="#ef4444" stroke-width="2" stroke-dasharray="10,8" opacity="0.85" />
+            <line x1="0" y1="0" x2="0" y2="${a4H}" stroke="#ef4444" stroke-width="2" stroke-dasharray="10,8" opacity="0.85" />
             <g transform="translate(0, ${a4H / 2}) rotate(-90)">
               <circle cx="0" cy="0" r="14" fill="#ffffff" stroke="#ef4444" stroke-width="1.5" />
               <text x="0" y="5" font-size="14" text-anchor="middle">✂️</text>
@@ -228,8 +264,8 @@ const TwoSubjectsA4Manager = {
           </g>
         ` : ''}
 
-        <!-- Right Slot Cover -->
-        <g id="a4-slot-right" transform="translate(${x2}, ${y2}) scale(${scale})">
+        <!-- Right Slot Cover (Fills Right A5 sheet 148.5mm x 210mm) -->
+        <g id="a4-slot-right" transform="translate(${x2}, ${y2}) scale(${scaleX}, ${scaleY})">
           ${c2.body}
         </g>
       </svg>
@@ -300,8 +336,9 @@ const TwoSubjectsA4Manager = {
     if (!printRoot) return;
 
     const mode = options.mode || 'all-12';
-    const marginMm = options.margin || 8;
+    const marginMm = options.margin !== undefined ? options.margin : 0;
     const showCutLine = options.showCutLine !== false;
+    const frameSource = options.frameSource || (mode === 'custom-2' ? 'custom' : null);
 
     let sheetsHtml = '';
 
@@ -309,8 +346,10 @@ const TwoSubjectsA4Manager = {
       // Generate all 6 Landscape sheets
       this.SHEETS_12_SUBJECTS.forEach((sh) => {
         const svgStr = this.generateA4SvgString(engine, {
+          mode: 'all-12',
           sub1Id: sh.sub1,
           sub2Id: sh.sub2,
+          frameSource: frameSource,
           margin: marginMm,
           showCutLine: showCutLine
         });
@@ -323,10 +362,12 @@ const TwoSubjectsA4Manager = {
     } else if (mode === 'custom-2') {
       // 1 sheet with 2 custom subjects
       const svgStr = this.generateA4SvgString(engine, {
+        mode: 'custom-2',
         sub1Id: options.sub1Id || 'khmer',
-        sub2Id: options.sub2Id || 'math',
+        sub2Id: options.sub2Id || 'dictation',
         sub1Text: options.sub1Text,
         sub2Text: options.sub2Text,
+        frameSource: frameSource || 'custom',
         margin: marginMm,
         showCutLine: showCutLine
       });
