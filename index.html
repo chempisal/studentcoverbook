@@ -792,11 +792,17 @@
         </div>
 
         <!-- Blue Status Info Pill Bar -->
-        <div style="background: rgba(30, 58, 138, 0.22); border: 1px solid rgba(59, 130, 246, 0.35); border-radius: 6px; padding: 7px 16px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; font-size: 11px; font-weight: 600; color: #cbd5e1; margin-bottom: 12px;">
-          <span>📄 ក្រដាស ៖ A4 Landscape (ចែកចេញជា ២ ក្រប A5 ពេញ)</span>
-          <span>📐 ទំហំក្រប ៖ <strong>Full Size A5 (148.5 × 210 mm)</strong></span>
-          <span>✂️ បន្ទាត់កាត់ ៖ កាត់ចំកណ្ដាលបាន ២ សន្លឹក A5</span>
-          <span>🎨 Background graphics ៖ បើក (Checked)</span>
+        <div style="background: rgba(30, 58, 138, 0.22); border: 1px solid rgba(59, 130, 246, 0.35); border-radius: 6px; padding: 8px 16px; font-size: 11px; font-weight: 600; color: #cbd5e1; margin-bottom: 12px;">
+          <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px;">
+            <span>📄 ក្រដាស ៖ A4 Landscape (ផ្ដេក)</span>
+            <span>📐 ទំហំក្រប ៖ <strong>Full Size A5 (148.5 × 210 mm)</strong></span>
+            <span>✂️ បន្ទាត់កាត់ ៖ កាត់ចំកណ្ដាលបាន ២ ក្រប A5 ពេញ</span>
+            <span>🎨 Background graphics ៖ បើក (Checked)</span>
+          </div>
+          <div style="margin-top: 6px; color: #fbbf24; font-size: 11px; font-weight: 600; border-top: 1px dashed rgba(59, 130, 246, 0.3); padding-top: 6px; display: flex; align-items: center; gap: 6px;">
+            <span>💡</span>
+            <span><strong>ការកំណត់ក្នុងផ្ទាំង Print System ៖</strong> សូមជ្រើសរើស <strong>Layout ៖ Landscape (ផ្ដេក)</strong> និង <strong>Margins ៖ None</strong> ដើម្បីទទួលបានក្របពេញទំហំស្អាតដូចក្នុងប្លង់ A4 នេះ!</span>
+          </div>
         </div>
 
         <!-- Sheet Indicator & Navigation Bar -->
@@ -821,12 +827,15 @@
         <div style="font-size: 12px; font-weight: 600; color: #f59e0b; display: flex; align-items: center; gap: 6px;">
           <span>💡</span> <span id="txt-print-footer-note">បោះពុម្ពទាំង 12 មុខវិជ្ជា (ស្មើ 6 សន្លឹក A4)</span>
         </div>
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <button type="button" class="btn btn-outline" id="btn-download-a4-hd" style="background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.2); font-weight: 600; padding: 7px 18px; font-size: 12px;">
+        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+          <button type="button" class="btn btn-outline" id="btn-download-a4-hd" style="background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.2); font-weight: 600; padding: 7px 14px; font-size: 12px;">
             <span>📥</span> ទាញយក A4 (HD Image)
           </button>
-          <button type="button" class="btn btn-gold" id="btn-print-now-primary" style="background: #10b981; border-color: #059669; color: #ffffff; font-weight: 700; padding: 7px 22px; font-size: 12.5px; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);">
-            <span>🖨️</span> បោះពុម្ពឥឡូវនេះ (Print Now)
+          <button type="button" class="btn" id="btn-print-current-sheet" style="background: #2563eb; color: #ffffff; font-weight: 700; padding: 7px 16px; font-size: 12px; border: none; border-radius: 6px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35); cursor: pointer; display: flex; align-items: center; gap: 5px;">
+            <span>📄</span> បោះពុម្ពសន្លឹកនេះ (១ សន្លឹក A4)
+          </button>
+          <button type="button" class="btn btn-gold" id="btn-print-now-primary" style="background: #10b981; border-color: #059669; color: #ffffff; font-weight: 700; padding: 7px 18px; font-size: 12.5px; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35); display: flex; align-items: center; gap: 5px;">
+            <span>🖨️</span> <span id="txt-btn-print-all">បោះពុម្ពទាំងអស់ (Print All)</span>
           </button>
         </div>
       </div>
@@ -836,17 +845,17 @@
   <!-- Dedicated Print Sandbox for Pure Vector A4 Output -->
   <div id="print-sandbox-root"></div>
 
-  <!-- Scripts -->
-  <script src="js/khmer-graphics.js"></script>
-  <script src="js/back-cover-presets.js"></script>
-  <script src="js/fonts-data.js"></script>
-  <script src="js/presets-data.js"></script>
-  <script src="js/text-3d-styles.js"></script>
-  <script src="js/canvas-engine.js"></script>
-  <script src="js/batch-generator.js"></script>
-  <script src="js/two-subjects-a4.js"></script>
-  <script src="js/template-storage.js"></script>
-  <script src="js/app.js"></script>
+  <!-- Scripts with Cache Busting -->
+  <script src="js/khmer-graphics.js?v=2.2"></script>
+  <script src="js/back-cover-presets.js?v=2.2"></script>
+  <script src="js/fonts-data.js?v=2.2"></script>
+  <script src="js/presets-data.js?v=2.2"></script>
+  <script src="js/text-3d-styles.js?v=2.2"></script>
+  <script src="js/canvas-engine.js?v=2.2"></script>
+  <script src="js/batch-generator.js?v=2.2"></script>
+  <script src="js/two-subjects-a4.js?v=2.2"></script>
+  <script src="js/template-storage.js?v=2.2"></script>
+  <script src="js/app.js?v=2.2"></script>
 </body>
 
 </html>

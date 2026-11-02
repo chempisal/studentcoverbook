@@ -973,9 +973,20 @@ body {
 }
 
 @media print {
+  @page {
+    size: A4 landscape;
+    margin: 0;
+  }
+
+  /* Remove all interactive app elements from the physical print stream */
+  body > *:not(#print-sandbox-root) {
+    display: none !important;
+  }
+
   html, body {
-    width: 297mm !important;
-    height: 210mm !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 100% !important;
     margin: 0 !important;
     padding: 0 !important;
     background: #ffffff !important;
@@ -984,58 +995,68 @@ body {
     print-color-adjust: exact !important;
   }
 
-  body * {
-    visibility: hidden !important;
-  }
-
-  #print-sandbox-root,
-  #print-sandbox-root * {
-    visibility: visible !important;
-  }
-
   #print-sandbox-root {
     display: block !important;
-    position: absolute !important;
-    left: 0 !important;
-    top: 0 !important;
-    width: 297mm !important;
+    position: static !important;
+    width: 100% !important;
     height: auto !important;
     margin: 0 !important;
     padding: 0 !important;
     background: #ffffff !important;
+    visibility: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  #print-sandbox-root * {
+    visibility: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
   /* Two Subjects Landscape Sheet (297mm x 210mm) */
   .print-page-sheet-landscape {
+    display: block !important;
+    position: relative !important;
     width: 297mm !important;
     height: 210mm !important;
+    min-width: 297mm !important;
     max-width: 297mm !important;
+    min-height: 210mm !important;
     max-height: 210mm !important;
-    page-break-before: auto !important;
+    page-break-before: always !important;
     page-break-after: always !important;
+    break-before: page !important;
     break-after: page !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
     overflow: hidden !important;
-    position: relative !important;
-    display: block !important;
     background: #ffffff !important;
-    margin: 0 !important;
+    margin: 0 auto !important;
     padding: 0 !important;
     box-sizing: border-box !important;
   }
 
+  .print-page-sheet-landscape:first-child {
+    page-break-before: auto !important;
+    break-before: auto !important;
+  }
+
   .print-page-sheet-landscape:last-child {
-    page-break-after: avoid !important;
-    break-after: avoid !important;
+    page-break-after: auto !important;
+    break-after: auto !important;
   }
 
   .print-page-sheet-landscape svg {
     width: 297mm !important;
     height: 210mm !important;
+    min-width: 297mm !important;
     max-width: 297mm !important;
+    min-height: 210mm !important;
     max-height: 210mm !important;
     display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
   .print-page-sheet {

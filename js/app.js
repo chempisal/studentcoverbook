@@ -1183,6 +1183,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const txtPrintFooterNote = document.getElementById('txt-print-footer-note');
   const btnDownloadA4Hd = document.getElementById('btn-download-a4-hd');
   const btnPrintNowPrimary = document.getElementById('btn-print-now-primary');
+  const btnPrintCurrentSheet = document.getElementById('btn-print-current-sheet');
+  const txtBtnPrintAll = document.getElementById('txt-btn-print-all');
 
   const printStudioState = {
     mode: 'all-12', // 'all-12', 'custom-2', 'students-batch', 'current-single'
@@ -1339,7 +1341,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     }
 
-    // Footer note text
+    // Footer note & print buttons text
     if (txtPrintFooterNote) {
       if (printStudioState.mode === 'all-12') {
         txtPrintFooterNote.textContent = 'បោះពុម្ពទាំង 12 មុខវិជ្ជា (ស្មើ 6 សន្លឹក A4)';
@@ -1350,6 +1352,19 @@ document.addEventListener('DOMContentLoaded', async () => {
       } else {
         txtPrintFooterNote.textContent = 'បោះពុម្ពមុខវិជ្ជាបច្ចុប្បន្ន (១ សន្លឹក A4 - ២ ក្របដូចគ្នា)';
       }
+    }
+
+    if (txtBtnPrintAll) {
+      if (total > 1) {
+        txtBtnPrintAll.textContent = `បោះពុម្ពទាំងអស់ (${total} សន្លឹក A4)`;
+      } else {
+        txtBtnPrintAll.textContent = 'បោះពុម្ពឥឡូវនេះ (១ សន្លឹក A4)';
+      }
+    }
+
+    if (btnPrintCurrentSheet) {
+      btnPrintCurrentSheet.style.display = total > 1 ? 'flex' : 'none';
+      btnPrintCurrentSheet.innerHTML = `<span>📄</span> បោះពុម្ពសន្លឹកទី ${printStudioState.currentSheetIndex + 1} (១ សន្លឹក A4)`;
     }
 
     // Render Preview
@@ -1551,6 +1566,38 @@ document.addEventListener('DOMContentLoaded', async () => {
           updatePrintStudioUI();
         };
         reader.readAsDataURL(file);
+      }
+    });
+  }
+
+  // Print Current Sheet Only Action
+  if (btnPrintCurrentSheet) {
+    btnPrintCurrentSheet.addEventListener('click', () => {
+      const originalText = btnPrintCurrentSheet.innerHTML;
+      btnPrintCurrentSheet.innerHTML = '<span>⏳</span> កំពុងរៀបចំ...';
+      btnPrintCurrentSheet.disabled = true;
+      try {
+        const curOpts = getCurrentSheetOptions();
+        TwoSubjectsA4Manager.executePrint(engine, {
+          mode: printStudioState.mode,
+          margin: printStudioState.margin,
+          showCutLine: printStudioState.showCutLine,
+          sub1Id: printStudioState.sub1Id,
+          sub2Id: printStudioState.sub2Id,
+          sub1Text: printStudioState.sub1Text,
+          sub2Text: printStudioState.sub2Text,
+          frameSource: printStudioState.frameSource,
+          printCurrentOnly: true,
+          currentSheetIndex: printStudioState.currentSheetIndex,
+          currentSheetOptions: curOpts
+        });
+      } catch (err) {
+        alert('កំហុសពេលបោះពុម្ព៖ ' + err.message);
+      } finally {
+        setTimeout(() => {
+          btnPrintCurrentSheet.innerHTML = originalText;
+          btnPrintCurrentSheet.disabled = false;
+        }, 1200);
       }
     });
   }

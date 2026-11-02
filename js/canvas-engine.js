@@ -274,7 +274,7 @@ class BookCoverCanvasEngine {
     this.container.innerHTML = `
       <div class="canvas-workspace-viewport" id="canvas-viewport">
         <div class="canvas-scaler-wrapper" id="canvas-scaler" style="transform-origin: center center; transition: transform 0.15s ease-out;">
-          <svg id="bookcover-svg" xmlns="http://www.w3.org/2000/svg" 
+          <svg id="bookcover-svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
                viewBox="0 0 ${this.width} ${this.height}" 
                width="${this.width}" height="${this.height}"
                style="background: #ffffff; box-shadow: 0 16px 48px rgba(0,0,0,0.22); border-radius: 8px; user-select: none; display: block;">
@@ -663,12 +663,12 @@ class BookCoverCanvasEngine {
 
   renderFrontCover(offsetX = 0, offsetY = 0, w = 600, h = 850) {
     this.renderFrame(offsetX, offsetY, w, h);
-    if (this.state.frameStyle !== 'cartoon-kids') {
+    if (this.state.frameStyle !== 'cartoon-kids' && this.state.frameStyle !== 'custom') {
       this.renderNationalHeader(offsetX, offsetY, w, h);
     }
     this.renderDecorations(offsetX, offsetY, w, h);
     this.renderPhoto(offsetX, offsetY);
-    if (this.state.frameStyle !== 'cartoon-kids') {
+    if (this.state.frameStyle !== 'cartoon-kids' && this.state.frameStyle !== 'custom') {
       this.renderBadges(offsetX, offsetY);
     }
     this.renderTextLayers(offsetX, offsetY);
@@ -1141,8 +1141,6 @@ class BookCoverCanvasEngine {
       const lx = ox + layer.x;
       const ly = oy + layer.y;
       const fontStr = FontManager.getFontFamilyString(layer.fontFamily);
-      const fillVal = layer.gradientFill ? `url(#grad-${layer.id})` : layer.fill;
-      const filterVal = layer.glowColor && layer.glowBlur > 0 ? `filter="url(#glow-${layer.id})"` : '';
       const textEscaped = this.escapeXml(layer.text);
 
       if (layer.hasRibbon) {
@@ -1153,6 +1151,9 @@ class BookCoverCanvasEngine {
       const depth = (layer.depth3D && layer.depth3D > 0) ? Math.min(Math.round(layer.depth3D), 15) : 0;
       const extColor = layer.extrusionColor || '#1e293b';
       const dir = layer.direction3D || 'bottom-right';
+      const strokeW = (layer.strokeWidth !== undefined && layer.strokeWidth !== null) ? Number(layer.strokeWidth) : 3;
+      const strokeColor = layer.stroke || '#ffffff';
+      const solidFill = layer.fill || '#000000';
 
       if (layer.isCurved && Math.abs(layer.curvature) > 2) {
         // Curved text via SVG textPath
@@ -1170,11 +1171,11 @@ class BookCoverCanvasEngine {
             ? Text3DManager.getDirectionOffsets(dir, depth + 1.5)
             : { dx: depth + 1.5, dy: depth + 1.5 };
           extrusionHtml += `
-            <g transform="translate(${maxOff.dx}, ${maxOff.dy})" opacity="0.4" filter="url(#soft-shadow)">
+            <g transform="translate(${maxOff.dx}, ${maxOff.dy})" opacity="0.35">
               <text font-family="${fontStr}" font-size="${layer.fontSize}" font-weight="bold"
-                    fill="#000000" stroke="#000000" stroke-width="${layer.strokeWidth > 0 ? layer.strokeWidth * 2 : 2}"
+                    fill="#000000" stroke="#000000" stroke-width="2"
                     stroke-linejoin="round" stroke-linecap="round">
-                <textPath href="#${pathId}" startOffset="50%" text-anchor="middle">${textEscaped}</textPath>
+                <textPath href="#${pathId}" xlink:href="#${pathId}" startOffset="50%" text-anchor="middle">${textEscaped}</textPath>
               </text>
             </g>
           `;
@@ -1186,9 +1187,9 @@ class BookCoverCanvasEngine {
             extrusionHtml += `
               <g transform="translate(${off.dx}, ${off.dy})">
                 <text font-family="${fontStr}" font-size="${layer.fontSize}" font-weight="bold"
-                      fill="${extColor}" stroke="${extColor}" stroke-width="${layer.strokeWidth > 0 ? layer.strokeWidth * 1.8 : 1.5}"
+                      fill="${extColor}" stroke="${extColor}" stroke-width="1.5"
                       stroke-linejoin="round" stroke-linecap="round">
-                  <textPath href="#${pathId}" startOffset="50%" text-anchor="middle">${textEscaped}</textPath>
+                  <textPath href="#${pathId}" xlink:href="#${pathId}" startOffset="50%" text-anchor="middle">${textEscaped}</textPath>
                 </text>
               </g>
             `;
@@ -1196,23 +1197,34 @@ class BookCoverCanvasEngine {
         }
 
         html += `
-          <g id="layer-group-${layer.id}" ${filterVal}>
+          <g id="layer-group-${layer.id}">
             <path id="${pathId}" d="${pathD}" fill="none" stroke="none" />
             <!-- 3D Extrusion Behind Text -->
             ${extrusionHtml}
-            <!-- Stroke Layer for Pop / Legibility -->
-            ${layer.strokeWidth > 0 ? `
+            <!-- Subtle Glow Halo -->
+            ${layer.glowColor && layer.glowBlur > 0 ? `
               <text font-family="${fontStr}" font-size="${layer.fontSize}" font-weight="bold"
-                    fill="none" stroke="${layer.stroke}" stroke-width="${layer.strokeWidth * 2}"
-                    stroke-linejoin="round" stroke-linecap="round">
-                <textPath href="#${pathId}" startOffset="50%" text-anchor="middle">
+                    fill="none" stroke="${layer.glowColor}" stroke-width="${strokeW * 1.5 + 3}"
+                    stroke-linejoin="round" stroke-linecap="round" opacity="0.45">
+                <textPath href="#${pathId}" xlink:href="#${pathId}" startOffset="50%" text-anchor="middle">
                   ${textEscaped}
                 </textPath>
               </text>
             ` : ''}
-            <!-- Fill Layer -->
-            <text font-family="${fontStr}" font-size="${layer.fontSize}" font-weight="bold" fill="${fillVal}">
-              <textPath href="#${pathId}" startOffset="50%" text-anchor="middle">
+            <!-- Crisp White Stroke Layer (Underneath fill) -->
+            ${strokeW > 0 ? `
+              <text font-family="${fontStr}" font-size="${layer.fontSize}" font-weight="bold"
+                    fill="none" stroke="${strokeColor}" stroke-width="${strokeW * 1.5}"
+                    stroke-linejoin="round" stroke-linecap="round">
+                <textPath href="#${pathId}" xlink:href="#${pathId}" startOffset="50%" text-anchor="middle">
+                  ${textEscaped}
+                </textPath>
+              </text>
+            ` : ''}
+            <!-- Pure Solid Vibrant Text Fill (On top - NEVER hollow, NEVER white inside) -->
+            <text font-family="${fontStr}" font-size="${layer.fontSize}" font-weight="bold"
+                  fill="${solidFill}" stroke="none">
+              <textPath href="#${pathId}" xlink:href="#${pathId}" startOffset="50%" text-anchor="middle">
                 ${textEscaped}
               </textPath>
             </text>
@@ -1226,9 +1238,9 @@ class BookCoverCanvasEngine {
             ? Text3DManager.getDirectionOffsets(dir, depth + 1.5)
             : { dx: depth + 1.5, dy: depth + 1.5 };
           extrusionHtml += `
-            <g transform="translate(${maxOff.dx}, ${maxOff.dy})" opacity="0.4" filter="url(#soft-shadow)">
+            <g transform="translate(${maxOff.dx}, ${maxOff.dy})" opacity="0.35">
               <text x="${lx}" y="${ly}" font-family="${fontStr}" font-size="${layer.fontSize}" font-weight="bold"
-                    fill="#000000" stroke="#000000" stroke-width="${layer.strokeWidth > 0 ? layer.strokeWidth * 2 : 2}"
+                    fill="#000000" stroke="#000000" stroke-width="2"
                     stroke-linejoin="round" stroke-linecap="round">
                 ${textEscaped}
               </text>
@@ -1242,7 +1254,7 @@ class BookCoverCanvasEngine {
             extrusionHtml += `
               <g transform="translate(${off.dx}, ${off.dy})">
                 <text x="${lx}" y="${ly}" font-family="${fontStr}" font-size="${layer.fontSize}" font-weight="bold"
-                      fill="${extColor}" stroke="${extColor}" stroke-width="${layer.strokeWidth > 0 ? layer.strokeWidth * 1.8 : 1.5}"
+                      fill="${extColor}" stroke="${extColor}" stroke-width="1.5"
                       stroke-linejoin="round" stroke-linecap="round">
                   ${textEscaped}
                 </text>
@@ -1252,19 +1264,28 @@ class BookCoverCanvasEngine {
         }
 
         html += `
-          <g id="layer-group-${layer.id}" ${filterVal} text-anchor="middle">
+          <g id="layer-group-${layer.id}" text-anchor="middle">
             <!-- 3D Extrusion Behind Text -->
             ${extrusionHtml}
-            <!-- Stroke Layer -->
-            ${layer.strokeWidth > 0 ? `
+            <!-- Subtle Glow Halo -->
+            ${layer.glowColor && layer.glowBlur > 0 ? `
               <text x="${lx}" y="${ly}" font-family="${fontStr}" font-size="${layer.fontSize}" font-weight="bold"
-                    fill="none" stroke="${layer.stroke}" stroke-width="${layer.strokeWidth * 2}"
+                    fill="none" stroke="${layer.glowColor}" stroke-width="${strokeW * 1.5 + 3}"
+                    stroke-linejoin="round" stroke-linecap="round" opacity="0.45">
+                ${textEscaped}
+              </text>
+            ` : ''}
+            <!-- Crisp White Stroke Layer (Underneath fill) -->
+            ${strokeW > 0 ? `
+              <text x="${lx}" y="${ly}" font-family="${fontStr}" font-size="${layer.fontSize}" font-weight="bold"
+                    fill="none" stroke="${strokeColor}" stroke-width="${strokeW * 1.5}"
                     stroke-linejoin="round" stroke-linecap="round">
                 ${textEscaped}
               </text>
             ` : ''}
-            <!-- Fill Layer -->
-            <text x="${lx}" y="${ly}" font-family="${fontStr}" font-size="${layer.fontSize}" font-weight="bold" fill="${fillVal}">
+            <!-- Pure Solid Vibrant Text Fill (On top - NEVER hollow, NEVER white inside) -->
+            <text x="${lx}" y="${ly}" font-family="${fontStr}" font-size="${layer.fontSize}" font-weight="bold"
+                  fill="${solidFill}" stroke="none">
               ${textEscaped}
             </text>
           </g>

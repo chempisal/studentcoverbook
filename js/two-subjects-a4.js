@@ -75,16 +75,14 @@ const TwoSubjectsA4Manager = {
       state.bgGradient = preset.bgGradient;
     }
 
-    if (preset.defaultColors) {
+    const isCustomUserTheme = hasCustomUploadedFrame || baseState.frameStyle === 'custom' || frameOverride === 'custom';
+
+    if (!isCustomUserTheme && preset.defaultColors) {
       if (preset.defaultColors.schoolName && state.layers.schoolName) {
         state.layers.schoolName.fill = preset.defaultColors.schoolName;
       }
       if (preset.defaultColors.grade && state.layers.grade) {
         state.layers.grade.fill = preset.defaultColors.grade;
-      }
-      if (preset.defaultColors.subject && state.layers.subject) {
-        state.layers.subject.fill = preset.defaultColors.subject;
-        state.layers.subject.fillColor2 = preset.themeColor || preset.defaultColors.subject;
       }
       if (preset.defaultColors.name && state.layers.studentName) {
         state.layers.studentName.fill = preset.defaultColors.name;
@@ -94,15 +92,18 @@ const TwoSubjectsA4Manager = {
       }
     }
 
-    if (preset.defaultFonts) {
+    // Subject layer color & theme
+    if (preset.defaultColors && preset.defaultColors.subject && state.layers.subject) {
+      state.layers.subject.fill = preset.defaultColors.subject;
+      state.layers.subject.fillColor2 = preset.themeColor || preset.defaultColors.subject;
+    }
+
+    if (!isCustomUserTheme && preset.defaultFonts) {
       if (preset.defaultFonts.schoolName && state.layers.schoolName) {
         state.layers.schoolName.fontFamily = preset.defaultFonts.schoolName;
       }
       if (preset.defaultFonts.grade && state.layers.grade) {
         state.layers.grade.fontFamily = preset.defaultFonts.grade;
-      }
-      if (preset.defaultFonts.subject && state.layers.subject) {
-        state.layers.subject.fontFamily = preset.defaultFonts.subject;
       }
       if (preset.defaultFonts.name && state.layers.studentName) {
         state.layers.studentName.fontFamily = preset.defaultFonts.name;
@@ -110,6 +111,10 @@ const TwoSubjectsA4Manager = {
       if (preset.defaultFonts.year && state.layers.academicYear) {
         state.layers.academicYear.fontFamily = preset.defaultFonts.year;
       }
+    }
+
+    if (preset.defaultFonts && preset.defaultFonts.subject && state.layers.subject) {
+      state.layers.subject.fontFamily = preset.defaultFonts.subject;
     }
 
     if (state.layers.subject) {
@@ -147,13 +152,18 @@ const TwoSubjectsA4Manager = {
       <g id="cover-text-${prefix}">${textHtml}</g>
     `;
 
-    defsHtml = defsHtml.replace(/id="([a-zA-Z0-9_\-]+)"/g, `id="$1_${prefix}"`);
-    defsHtml = defsHtml.replace(/url\(#([a-zA-Z0-9_\-]+)\)/g, `url(#$1_${prefix})`);
-    defsHtml = defsHtml.replace(/href="#([a-zA-Z0-9_\-]+)"/g, `href="#$1_${prefix}"`);
+    const replaceLinksAndIds = (str, p) => {
+      // 1. Replace IDs
+      str = str.replace(/\bid="([a-zA-Z0-9_\-]+)"/g, `id="$1_${p}"`);
+      // 2. Replace url(#id)
+      str = str.replace(/url\(#([a-zA-Z0-9_\-]+)\)/g, `url(#$1_${p})`);
+      // 3. Replace href="#id" and xlink:href="#id" in one single pass without double-replacement
+      str = str.replace(/\b(href|xlink:href)="#([a-zA-Z0-9_\-]+)"/g, `$1="#$2_${p}"`);
+      return str;
+    };
 
-    combined = combined.replace(/id="([a-zA-Z0-9_\-]+)"/g, `id="$1_${prefix}"`);
-    combined = combined.replace(/url\(#([a-zA-Z0-9_\-]+)\)/g, `url(#$1_${prefix})`);
-    combined = combined.replace(/href="#([a-zA-Z0-9_\-]+)"/g, `href="#$1_${prefix}"`);
+    defsHtml = replaceLinksAndIds(defsHtml, prefix);
+    combined = replaceLinksAndIds(combined, prefix);
 
     return {
       defs: defsHtml,
@@ -227,11 +237,14 @@ const TwoSubjectsA4Manager = {
       if (state2.layers.grade) state2.layers.grade.text = options.grade;
     }
 
-    const c1 = this.renderCoverWithPrefix(state1, 'c1');
-    const c2 = this.renderCoverWithPrefix(state2, 'c2');
+    const prefix1 = options.prefix1 || 'c1';
+    const prefix2 = options.prefix2 || 'c2';
+
+    const c1 = this.renderCoverWithPrefix(state1, prefix1);
+    const c2 = this.renderCoverWithPrefix(state2, prefix2);
 
     return `
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${a4W} ${a4H}" width="100%" height="100%" preserveAspectRatio="xMidYMid meet"
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 ${a4W} ${a4H}" width="100%" height="100%" preserveAspectRatio="xMidYMid meet"
            style="background: #ffffff; display: block; width: 100%; height: 100%; font-feature-settings: 'kern' 1, 'liga' 1;">
         <defs>
           <style>
@@ -339,19 +352,63 @@ const TwoSubjectsA4Manager = {
     const marginMm = options.margin !== undefined ? options.margin : 0;
     const showCutLine = options.showCutLine !== false;
     const frameSource = options.frameSource || (mode === 'custom-2' ? 'custom' : null);
+    const printCurrentOnly = options.printCurrentOnly === true;
+    const currentSheetIndex = options.currentSheetIndex || 0;
 
     let sheetsHtml = '';
 
-    if (mode === 'all-12') {
-      // Generate all 6 Landscape sheets
-      this.SHEETS_12_SUBJECTS.forEach((sh) => {
+    if (printCurrentOnly) {
+      // Print ONLY the exact 1 sheet currently being previewed in the modal!
+      let curSvg = options.currentSheetSvg;
+      if (!curSvg) {
+        if (mode === 'all-12') {
+          const sh = this.SHEETS_12_SUBJECTS[currentSheetIndex] || this.SHEETS_12_SUBJECTS[0];
+          curSvg = this.generateA4SvgString(engine, {
+            mode: 'all-12',
+            sub1Id: sh.sub1,
+            sub2Id: sh.sub2,
+            frameSource: frameSource,
+            margin: marginMm,
+            showCutLine: showCutLine
+          });
+        } else if (mode === 'custom-2') {
+          curSvg = this.generateA4SvgString(engine, {
+            mode: 'custom-2',
+            sub1Id: options.sub1Id || 'khmer',
+            sub2Id: options.sub2Id || 'dictation',
+            sub1Text: options.sub1Text,
+            sub2Text: options.sub2Text,
+            frameSource: frameSource || 'custom',
+            margin: marginMm,
+            showCutLine: showCutLine
+          });
+        } else {
+          const stateClone = JSON.parse(JSON.stringify(engine.state));
+          curSvg = this.generateA4SvgString(engine, {
+            customState1: stateClone,
+            customState2: stateClone,
+            margin: marginMm,
+            showCutLine: showCutLine
+          });
+        }
+      }
+      sheetsHtml = `
+        <div class="print-page-sheet-landscape">
+          ${curSvg}
+        </div>
+      `;
+    } else if (mode === 'all-12') {
+      // Generate all 6 Landscape sheets with distinct non-colliding IDs
+      this.SHEETS_12_SUBJECTS.forEach((sh, sheetIdx) => {
         const svgStr = this.generateA4SvgString(engine, {
           mode: 'all-12',
           sub1Id: sh.sub1,
           sub2Id: sh.sub2,
           frameSource: frameSource,
           margin: marginMm,
-          showCutLine: showCutLine
+          showCutLine: showCutLine,
+          prefix1: `s${sheetIdx + 1}c1`,
+          prefix2: `s${sheetIdx + 1}c2`
         });
         sheetsHtml += `
           <div class="print-page-sheet-landscape">
@@ -427,11 +484,34 @@ const TwoSubjectsA4Manager = {
       }
     }
 
+    // Force Landscape A4 via injected style before print
+    let printStyle = document.getElementById('dynamic-print-page-style');
+    if (!printStyle) {
+      printStyle = document.createElement('style');
+      printStyle.id = 'dynamic-print-page-style';
+      document.head.appendChild(printStyle);
+    }
+    printStyle.textContent = `
+      @page {
+        size: A4 landscape;
+        margin: 0;
+      }
+      @media print {
+        @page {
+          size: A4 landscape;
+          margin: 0;
+        }
+      }
+    `;
+
     printRoot.innerHTML = sheetsHtml;
 
-    setTimeout(() => {
-      window.print();
-    }, 400);
+    // Allow full layout recalculation and font glyph caching before opening print dialog
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        window.print();
+      }, 450);
+    });
   },
 
   shadeColor(color, percent) {
