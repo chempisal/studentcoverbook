@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="km">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ស្ទូឌីយោរចនាក្របសៀវភៅសិស្សខ្មែរ - Khmer Student Book Cover Studio Pro Max</title>
+  <meta name="description"
+    content="កម្មវិធីបង្កើត និងរចនាក្របសៀវភៅសិស្សបែបខ្មែរទំនើប ក្បាច់ភ្ញីទេសរាជវាំង អង្គរវត្ត ផ្ការំដួល ក្រឡាហ្គារ៉ូ ក្របក្រោយ តារាងមេគុណលេខ និងបោះពុម្ព A4 យ៉ាងស្រស់ស្អាត">
+
+  <!-- Google Fonts Preconnect -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;600;700&family=Moul&family=Koulen&family=Battambang:wght@400;700&display=swap"
+    rel="stylesheet">
+
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+  <!-- App Header -->
+  <header class="app-header">
+    <div class="brand-section">
+      <div class="brand-logo">📖</div>
+      <div>
+        <h1 class="brand-title">ស្ទូឌីយោរចនាក្របសៀវភៅសិស្សខ្មែរ</h1>
+        <div class="brand-sub">Khmer Student Notebook Cover Studio Pro Max • ជំនាន់ថ្មី</div>
+      </div>
+    </div>
+
+    <!-- Center View Mode Switcher -->
+    <div class="view-mode-tabs">
+      <button type="button" class="view-tab-btn active" id="btn-view-front" data-mode="front">
+        <span>📘</span> ក្របមុខ (Front)
+      </button>
+      <button type="button" class="view-tab-btn" id="btn-view-back" data-mode="back">
+        <span>📖</span> ក្របក្រោយ (Back)
+      </button>
+      <button type="button" class="view-tab-btn" id="btn-view-wraparound" data-mode="wraparound">
+        <span>📑</span> ក្របភ្លោះ A4 (Fold)
+      </button>
+    </div>
+
+    <!-- Right Header Actions -->
+    <div class="header-actions">
+      <!-- Auto-Save Pill -->
+      <div id="autosave-pill" style="display: flex; align-items: center; gap: 6px; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 20px; padding: 4px 12px; font-size: 11px; color: #34d399;">
+        <span style="width: 7px; height: 7px; border-radius: 50%; background: #10b981; box-shadow: 0 0 6px #10b981;"></span>
+        <span id="autosave-text">រក្សាទុកស្វ័យប្រវត្តិ</span>
+      </div>
+
+      <button type="button" class="btn btn-outline btn-sm" id="btn-open-font-modal" title="គ្រប់គ្រង Font ពី PC និង Google Fonts">
+        <span>🔤</span> Font ក្នុង PC
+      </button>
+      <button type="button" class="btn btn-gold btn-sm" id="btn-open-2subjects-modal" title="ប្លង់បោះពុម្ពលើក្រដាស A4 (KHMER A4 PRINT STUDIO)">
+        <span>🖨️</span> បោះពុម្ពលើក្រដាស A4
+      </button>
+      <button type="button" class="btn btn-gold btn-sm" id="btn-open-batch-modal" title="បោះពុម្ពក្របសៀវភៅសម្រាប់សិស្សទាំងថ្នាក់">
+        <span>👨‍🏫</span> បោះពុម្ពតាមថ្នាក់
+      </button>
+      <button type="button" class="btn btn-primary btn-sm" id="btn-open-export-modal" title="ទាញយកជារូបភាព HD ឬ ចែករំលែក Link">
+        <span>📥</span> ទាញយក / Share
+      </button>
+      <button type="button" class="btn btn-outline btn-sm" id="btn-theme-toggle" title="ប្ដូរ Dark/Light Mode">
+        <span id="theme-icon">🌓</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- App Body Layout -->
+  <div class="app-body">
+    <!-- Left Icon Sidebar -->
+    <nav class="sidebar-nav">
+      <button type="button" class="nav-tab-btn active" data-tab="tab-text" title="ស្រទាប់អក្សរ & រចនាបថ">
+        <span class="nav-icon">✍️</span>
+        <span>អក្សរ</span>
+      </button>
+      <button type="button" class="nav-tab-btn" data-tab="tab-frames" title="ក្បាច់ & ស៊ុមខ្មែរ">
+        <span class="nav-icon">🖼️</span>
+        <span>ស៊ុមខ្មែរ</span>
+      </button>
+      <button type="button" class="nav-tab-btn" data-tab="tab-presets" title="មុខវិជ្ជាបឋមសិក្សា">
+        <span class="nav-icon">📚</span>
+        <span>មុខវិជ្ជា</span>
+      </button>
+      <button type="button" class="nav-tab-btn" data-tab="tab-backcover" title="ក្របក្រោយ & មេគុណលេខ">
+        <span class="nav-icon">📖</span>
+        <span>ក្របក្រោយ</span>
+      </button>
+      <button type="button" class="nav-tab-btn" data-tab="tab-badges" title="រូបថតសិស្ស & ផ្លាកសញ្ញា">
+        <span class="nav-icon">🎖️</span>
+        <span>រូបថត</span>
+      </button>
+    </nav>
+
+    <!-- Sidebar Detail Panel -->
+    <aside class="sidebar-panel">
+      
+      <!-- TAB 1: TEXT & LAYERS -->
+      <div class="panel-tab-content active" id="tab-text">
+        <div class="panel-header">
+          <div class="panel-title"><span>✍️</span> ស្រទាប់អក្សរ (Text Layers)</div>
+          <button type="button" class="btn btn-sm btn-outline" id="btn-apply-font-all" title="ដាក់ Font នេះលើអក្សរទាំងអស់">
+            ✨ ដាក់លើទាំងអស់
+          </button>
+        </div>
+        <div class="panel-content">
+          <!-- Active Layer Selector -->
+          <div class="form-group">
+            <label class="form-label" for="select-active-layer">ជ្រើសរើសស្រទាប់កែសម្រួល ៖</label>
+            <select class="form-control" id="select-active-layer">
+              <option value="schoolName">🏫 ឈ្មោះសាលារៀន</option>
+              <option value="grade">🏷️ ថ្នាក់ទី / បន្ទប់</option>
+              <option value="subject">📚 មុខវិជ្ជា</option>
+              <option value="studentName">👤 ឈ្មោះសិស្ស</option>
+              <option value="studentInfoExtra">🆔 ភេទ / អត្តលេខ</option>
+              <option value="teacherName">👩‍🏫 ឈ្មោះគ្រូបង្រៀន</option>
+              <option value="academicYear">📅 ឆ្នាំសិក្សា</option>
+            </select>
+          </div>
+
+          <!-- Text Input -->
+          <div class="form-group">
+            <label class="form-label" for="input-layer-text">អត្ថបទ ៖</label>
+            <input type="text" class="form-control" id="input-layer-text" value="សាលាបឋមសិក្សាកោះថ្ម">
+          </div>
+
+          <!-- Font Family Selector -->
+          <div class="form-group">
+            <div class="form-label">
+              <span>ពុម្ពអក្សរ (Font) ៖</span>
+              <a href="#" id="link-open-font-picker" style="color: var(--accent-gold); text-decoration: none; font-size: 11px;">+ រក Font បន្ថែម</a>
+            </div>
+            <select class="form-control" id="select-layer-font">
+              <!-- Populated dynamically via JS -->
+            </select>
+          </div>
+
+          <!-- Font Size Slider -->
+          <div class="form-group">
+            <div class="form-label">
+              <span>ទំហំអក្សរ (Font Size) ៖</span>
+              <span class="range-val" id="val-font-size">37px</span>
+            </div>
+            <div class="range-slider-row">
+              <input type="range" class="range-slider" id="slider-font-size" min="14" max="72" value="37">
+            </div>
+          </div>
+
+          <!-- Colors Group -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="form-group">
+              <label class="form-label">ពណ៌អក្សរ ៖</label>
+              <div class="color-picker-row">
+                <input type="color" class="color-input" id="input-layer-color" value="#0d47a1">
+                <span style="font-size: 11.5px; font-weight: 600;" id="text-color-hex">#0d47a1</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">ពណ៌ Gradient ៖</label>
+              <div class="color-picker-row">
+                <input type="color" class="color-input" id="input-layer-color2" value="#1976d2">
+                <input type="checkbox" id="check-gradient-fill" checked title="បើក Gradient">
+              </div>
+            </div>
+          </div>
+
+          <!-- Stroke Outline -->
+          <div class="form-group">
+            <div class="form-label">
+              <span>គែមអក្សរ (Stroke Width) ៖</span>
+              <span class="range-val" id="val-stroke-width">4px</span>
+            </div>
+            <div class="range-slider-row">
+              <input type="color" class="color-input" id="input-stroke-color" value="#ffffff" title="ពណ៌គែម">
+              <input type="range" class="range-slider" id="slider-stroke-width" min="0" max="10" step="0.5" value="4">
+            </div>
+          </div>
+
+          <!-- 3D Text Styles Section -->
+          <div class="layer-card" style="border: 1px solid rgba(245, 158, 11, 0.45); background: linear-gradient(180deg, rgba(245, 158, 11, 0.08) 0%, rgba(15, 23, 42, 0.65) 100%);">
+            <div class="layer-card-header" style="justify-content: space-between; align-items: center;">
+              <span class="layer-badge" style="background: rgba(245, 158, 11, 0.25); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);">
+                ✨ ម៉ូតអក្សរ 3D (30 ម៉ូតស្អាតៗ)
+              </span>
+              <button type="button" class="btn btn-sm btn-gold" id="btn-open-3d-modal" style="padding: 3px 10px; font-size: 11px;">
+                🎨 បណ្ណាល័យ 3D
+              </button>
+            </div>
+
+            <!-- 3D Style Dropdown -->
+            <div class="form-group" style="margin-top: 10px;">
+              <label class="form-label" for="select-3d-style">ជ្រើសរើសម៉ូត 3D ៖</label>
+              <select class="form-control" id="select-3d-style">
+                <option value="none">-- គ្មាន (ធម្មតា / 2D) --</option>
+                <!-- Populated via Text3DManager -->
+              </select>
+            </div>
+
+            <!-- 3D Depth Slider & Extrusion Color -->
+            <div class="form-group" id="box-3d-depth">
+              <div class="form-label">
+                <span>កម្រាស់ជម្រៅ 3D (Depth) ៖</span>
+                <span class="range-val" id="val-3d-depth">5px</span>
+              </div>
+              <div class="range-slider-row">
+                <input type="color" class="color-input" id="input-3d-extrusion-color" value="#78350f" title="ពណ៌ស្រមោល 3D Extrusion">
+                <input type="range" class="range-slider" id="slider-3d-depth" min="0" max="15" step="1" value="5">
+              </div>
+            </div>
+
+            <!-- 3D Direction Picker -->
+            <div class="form-group" id="box-3d-direction">
+              <label class="form-label">ទិសដៅជម្រៅ 3D ៖</label>
+              <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;">
+                <button type="button" class="btn-direction-pick active" data-dir="bottom-right" title="ក្រោម-ស្តាំ (Bottom Right)">↘ ក្រោមស្តាំ</button>
+                <button type="button" class="btn-direction-pick" data-dir="bottom-left" title="ក្រោម-ឆ្វេង (Bottom Left)">↙ ក្រោមឆ្វេង</button>
+                <button type="button" class="btn-direction-pick" data-dir="down" title="ចុះក្រោមត្រង់ (Down)">↓ ចុះក្រោម</button>
+                <button type="button" class="btn-direction-pick" data-dir="top-right" title="លើ-ស្តាំ (Top Right)">↗ លើស្តាំ</button>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 8px; margin-top: 8px;">
+              <button type="button" class="btn btn-sm btn-outline" id="btn-apply-3d-all" style="flex: 1; font-size: 11px;">
+                ✨ ដាក់ម៉ូត 3D លើគ្រប់អក្សរទាំងអស់
+              </button>
+            </div>
+          </div>
+
+          <!-- Curved Text Section -->
+          <div class="layer-card">
+            <div class="layer-card-header">
+              <span class="layer-badge">🌈 អក្សរកោង (Curved Text Arc)</span>
+              <input type="checkbox" id="check-is-curved" checked>
+            </div>
+            <div class="form-group" id="curved-controls-box">
+              <div class="form-label">
+                <span>កម្រិតកោង (-100 ទៅ +100) ៖</span>
+                <span class="range-val" id="val-curvature">13</span>
+              </div>
+              <div class="range-slider-row">
+                <input type="range" class="range-slider" id="slider-curvature" min="-80" max="80" value="13">
+              </div>
+            </div>
+          </div>
+
+          <!-- Ribbon Backdrop Toggle -->
+          <div class="layer-card">
+            <div class="layer-card-header">
+              <span class="layer-badge">🎀 បូកិត្តិយសផ្ទៃខាងក្រោយ (Ribbon Banner)</span>
+              <input type="checkbox" id="check-has-ribbon">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: FRAMES & BORDERS -->
+      <div class="panel-tab-content" id="tab-frames">
+        <div class="panel-header">
+          <div class="panel-title"><span>🖼️</span> ក្បាច់ & ស៊ុមខ្មែរ (Khmer Frames)</div>
+        </div>
+        <div class="panel-content">
+          <div class="cards-grid" id="frames-cards-grid">
+            <!-- Populated dynamically via JS -->
+          </div>
+
+          <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 8px 0;">
+
+          <!-- Inner Card Controls -->
+          <div class="layer-card">
+            <div class="layer-card-header">
+              <span class="layer-badge">📄 បន្ទះក្រដាសខាងក្នុង (Inner Card)</span>
+              <input type="checkbox" id="check-inner-card" checked>
+            </div>
+            <div class="form-group">
+              <label class="form-label">ពណ៌ផ្ទៃក្រដាស ៖</label>
+              <div class="color-picker-row">
+                <input type="color" class="color-input" id="input-inner-bg" value="#ffffea">
+                <span style="font-size: 11px;">#ffffea (លឿងស្រាល)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Custom Frame Upload -->
+          <div class="layer-card">
+            <div class="layer-card-header">
+              <span class="layer-badge">📁 បញ្ចូលរូបស៊ុមពី PC (Custom Frame)</span>
+            </div>
+            <button type="button" class="btn btn-outline btn-sm" id="btn-upload-frame">
+              <span>🖼️</span> ជ្រើសរើសរូបភាពស៊ុម (.png / .jpg)
+            </button>
+            <input type="file" id="input-frame-file" accept="image/*" style="display: none;">
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: SUBJECT PRESETS -->
+      <div class="panel-tab-content" id="tab-presets">
+        <div class="panel-header">
+          <div class="panel-title" style="color: #fbbf24;"><span>📚</span> មុខវិជ្ជាបឋមសិក្សា (Subject Presets)</div>
+          <div style="display: flex; gap: 6px;">
+            <button type="button" class="btn btn-sm btn-gold" id="btn-add-subject" title="បង្កើតមុខវិជ្ជាថ្មី">
+              <span>➕</span> បន្ថែមថ្មី
+            </button>
+            <button type="button" class="btn btn-sm btn-outline" id="btn-reset-subjects" title="កំណត់មុខវិជ្ជាដើមឡើងវិញ" style="padding: 4px 8px;">
+              <span>🔄</span>
+            </button>
+          </div>
+        </div>
+        <div class="panel-content">
+          <div class="cards-grid" id="subjects-cards-grid">
+            <!-- Populated dynamically via JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 4: BACK COVER -->
+      <div class="panel-tab-content" id="tab-backcover">
+        <div class="panel-header">
+          <div class="panel-title" style="color: #fbbf24;"><span>📖</span> ក្របក្រោយ (Back Cover)</div>
+        </div>
+        <div class="panel-content">
+          <div class="form-group">
+            <label class="form-label" style="font-size: 12.5px; font-weight: 700;">ជ្រើសរើសមាតិកាក្របក្រោយ ៖</label>
+            <div id="backcover-presets-grid" class="backcover-grid">
+              <!-- Populated dynamically via JS with feature-list-card -->
+            </div>
+          </div>
+          <div style="background: rgba(30, 58, 138, 0.25); border: 1px solid rgba(59, 130, 246, 0.35); border-radius: 8px; padding: 12px; margin-top: 14px; font-size: 11.5px; color: #93c5fd; line-height: 1.5;">
+            💡 <strong>ចំណាំ ៖</strong> ចុចលើផ្ទាំងខាងលើ <strong>"📖 ក្របក្រោយ"</strong> ឬ <strong>"📑 ក្របភ្លោះ A4"</strong> ដើម្បីមើលការបង្ហាញផ្ទាល់នៅលើ Canvas!
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 5: BADGES & PHOTO -->
+      <div class="panel-tab-content" id="tab-badges">
+        <div class="panel-header">
+          <div class="panel-title"><span>🎖️</span> រូបថតសិស្ស & ផ្លាកសញ្ញា</div>
+        </div>
+        <div class="panel-content">
+          <!-- Student Photo Box -->
+          <div class="layer-card">
+            <div class="layer-card-header">
+              <span class="layer-badge">👤 រូបថតសិស្ស (Student Avatar)</span>
+              <input type="checkbox" id="check-enable-photo">
+            </div>
+            <div id="photo-controls-box" style="display: none; flex-direction: column; gap: 10px;">
+              <button type="button" class="btn btn-outline btn-sm" id="btn-upload-photo">
+                <span>📷</span> បញ្ចូលរូបថតសិស្ស
+              </button>
+              <input type="file" id="input-photo-file" accept="image/*" style="display: none;">
+
+              <div class="form-group">
+                <label class="form-label">រាងស៊ុមរូបថត ៖</label>
+                <select class="form-control" id="select-photo-shape">
+                  <option value="circle">រង្វង់មូល (Gold Medal Circle)</option>
+                  <option value="rect">រាងចតុកោណកែង (ID Badge)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <div class="form-label">
+                  <span>ទំហំរូបថត ៖</span>
+                  <span class="range-val" id="val-photo-size">80px</span>
+                </div>
+                <input type="range" class="range-slider" id="slider-photo-size" min="50" max="150" value="80">
+              </div>
+            </div>
+          </div>
+
+          <!-- Badges Section -->
+          <div class="layer-card">
+            <div class="layer-card-header">
+              <span class="layer-badge">🎖️ ផ្លាកសញ្ញាកិត្តិយស (Honor Badge)</span>
+              <input type="checkbox" id="check-enable-badge" checked>
+            </div>
+            <div class="form-group">
+              <label class="form-label">ប្រភេទផ្លាក ៖</label>
+              <select class="form-control" id="select-badge-type">
+                <option value="moeys">ផ្លាកសញ្ញាអប់រំ MoEYS</option>
+                <option value="medal-10">មេដាយកិត្តិយស ១០/១០</option>
+                <option value="star">ផ្កាយសិស្សពូកែ</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- National Header Toggle -->
+          <div class="layer-card">
+            <div class="layer-card-header">
+              <span class="layer-badge">🇰🇭 ក្បាលទំព័រជាតិ (ព្រះរាជាណាចក្រកម្ពុជា)</span>
+              <input type="checkbox" id="check-national-header" checked>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- Center Canvas Area -->
+    <main class="canvas-main-area">
+      <!-- Canvas Top Toolbar -->
+      <div class="canvas-top-toolbar">
+        <div class="toolbar-group">
+          <button type="button" class="btn btn-outline btn-sm" id="btn-undo" title="ត្រឡប់ក្រោយ (Ctrl+Z)" disabled>
+            <span>↶</span> មិនធ្វើវិញ
+          </button>
+          <button type="button" class="btn btn-outline btn-sm" id="btn-redo" title="ធ្វើឡើងវិញ (Ctrl+Y)" disabled>
+            <span>↷</span> ធ្វើឡើងវិញ
+          </button>
+        </div>
+
+        <div class="toolbar-group">
+          <span style="font-size: 11px; color: var(--text-muted);">Zoom:</span>
+          <button type="button" class="btn btn-outline btn-sm" id="btn-zoom-out" style="padding: 4px 8px;">-</button>
+          <span id="zoom-text" style="font-size: 12px; font-weight: 700; width: 45px; text-align: center;">100%</span>
+          <button type="button" class="btn btn-outline btn-sm" id="btn-zoom-in" style="padding: 4px 8px;">+</button>
+          <button type="button" class="btn btn-outline btn-sm" id="btn-zoom-fit" style="padding: 4px 8px;" title="ពង្រីកឲ្យសមល្មមអេក្រង់">Fit</button>
+        </div>
+
+        <div class="toolbar-group">
+          <span style="font-size: 11.5px; color: #ffd700;">💡 ចុចលើអក្សរផ្ទាល់លើក្រប ដើម្បីជ្រើសរើស និងអូសប្ដូរទីតាំង</span>
+        </div>
+      </div>
+
+      <!-- Live Canvas Container -->
+      <div class="canvas-viewport-container" id="canvas-container">
+        <!-- SVG Canvas rendered dynamically by BookCoverCanvasEngine -->
+      </div>
+    </main>
+  </div>
+
+  <!-- MODAL 1: FONT MANAGER -->
+  <div class="modal-overlay" id="modal-fonts">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title"><span>🔤</span> គ្រប់គ្រង Font ខ្មែរ (Khmer Fonts Studio)</div>
+        <button type="button" class="modal-close-btn" data-close="modal-fonts">✕</button>
+      </div>
+      <div class="modal-body">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <input type="text" class="form-control" id="input-font-search" placeholder="ស្វែងរកឈ្មោះ Font..." style="flex: 1;">
+          <button type="button" class="btn btn-outline" id="btn-scan-pc-fonts">
+            <span>🔍</span> ស្កេន Font ក្នុង PC
+          </button>
+          <button type="button" class="btn btn-primary" id="btn-upload-font-file">
+            <span>📁</span> បញ្ចូល Font (.ttf, .otf)
+          </button>
+          <input type="file" id="input-font-upload-hidden" accept=".ttf,.otf,.woff,.woff2" multiple style="display: none;">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">សាកល្បងមើលអក្សរគំរូ ៖</label>
+          <input type="text" class="form-control" id="input-font-sample-text" value="សាលាបឋមសិក្សាកោះថ្កូវ • ភាសាខ្មែរ">
+        </div>
+
+        <div class="font-cards-grid" id="modal-font-cards-container">
+          <!-- Populated via JS -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" data-close="modal-fonts">បិទ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: CLASSROOM BATCH PRINTING -->
+  <div class="modal-overlay" id="modal-batch">
+    <div class="modal-card" style="max-width: 820px;">
+      <div class="modal-header">
+        <div class="modal-title"><span>👨‍🏫</span> បោះពុម្ពក្របសៀវភៅតាមថ្នាក់ (Classroom Printing)</div>
+        <button type="button" class="modal-close-btn" data-close="modal-batch">✕</button>
+      </div>
+      <div class="modal-body">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <label class="form-label" style="font-size: 13px; font-weight: 700;">បញ្ចូល ឬចម្លងបញ្ជីឈ្មោះសិស្ស (Paste Names / CSV) ៖</label>
+          <button type="button" class="btn btn-outline btn-sm" id="btn-load-sample-roster">
+            <span>📋</span> ប្រើទិន្នន័យគំរូ ២០ នាក់
+          </button>
+        </div>
+
+        <textarea class="form-control" id="textarea-batch-names" rows="7" 
+                  placeholder="ឈ្មោះសិស្ស (១ ជួរ ១ នាក់) ឧទាហរណ៍ ៖&#10;រស់ សុវណ្ណរចនា, ស្រី, ០០១&#10;ជា ប៊ុនថន, ប្រុស, ០០២&#10;សុខ ចាន់ណា, ស្រី, ០០៣"></textarea>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-primary); padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+          <div>
+            <div style="font-weight: 700; color: var(--text-gold);" id="batch-count-display">ចំនួនសិស្ស ៖ ២០ នាក់</div>
+            <div style="font-size: 11px; color: var(--text-muted);">ស្មើនឹង ១០ សន្លឹកក្រដាស A4 (២ ក្របក្នុង ១ សន្លឹក + បន្ទាត់កាត់ ✂️)</div>
+          </div>
+          <button type="button" class="btn btn-gold" id="btn-execute-class-print">
+            <span>🖨️</span> បោះពុម្ពឥឡូវនេះ (Print A4)
+          </button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" data-close="modal-batch">បិទ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 3: EXPORT & SHARE -->
+  <div class="modal-overlay" id="modal-export">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title"><span>📥</span> ទាញយក & ចែករំលែក (Export & Share)</div>
+        <button type="button" class="modal-close-btn" data-close="modal-export">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="cards-grid">
+          <!-- Option 1: Ultra-HD PNG -->
+          <div class="preset-card" id="btn-export-png-2x" style="padding: 16px;">
+            <div style="font-size: 32px;">🖼️</div>
+            <div style="font-weight: 700;">ទាញយក PNG (HD 300 DPI)</div>
+            <div style="font-size: 11px; color: var(--text-muted);">រូបភាពច្បាស់ម៉ត់ឥតខ្ចោះ សម្រាប់បោះពុម្ព</div>
+          </div>
+
+          <!-- Option 1.5: 2 Subjects on 1 A4 Sheet Image -->
+          <div class="preset-card" id="btn-export-2subjects-a4-card" style="padding: 16px; border-color: rgba(245, 158, 11, 0.4); background: rgba(245, 158, 11, 0.05);">
+            <div style="font-size: 32px;">📄</div>
+            <div style="font-weight: 700; color: var(--text-gold);">រូបភាព A4 (២ មុខវិជ្ជា)</div>
+            <div style="font-size: 11px; color: var(--text-muted);">១ សន្លឹក A4 មាន ២ មុខវិជ្ជា + បន្ទាត់កាត់ ✂️ (300 DPI)</div>
+          </div>
+
+          <!-- Option 2: Pure Vector SVG -->
+          <div class="preset-card" id="btn-export-svg" style="padding: 16px;">
+            <div style="font-size: 32px;">📐</div>
+            <div style="font-weight: 700;">ទាញយក Vector SVG</div>
+            <div style="font-size: 11px; color: var(--text-muted);">ឯកសារក្បាច់វ៉ិចទ័រ សម្រាប់រោងពុម្ព</div>
+          </div>
+
+          <!-- Option 3: Template JSON Backup -->
+          <div class="preset-card" id="btn-export-json" style="padding: 16px;">
+            <div style="font-size: 32px;">💾</div>
+            <div style="font-weight: 700;">ទាញយក Template (.json)</div>
+            <div style="font-size: 11px; color: var(--text-muted);">រក្សាទុកគំរូ និងបើកប្រើលើម៉ាស៊ីនផ្សេង</div>
+          </div>
+
+          <!-- Option 4: Share URL -->
+          <div class="preset-card" id="btn-copy-share-url" style="padding: 16px;">
+            <div style="font-size: 32px;">🔗</div>
+            <div style="font-weight: 700;">ចម្លង Link ចែករំលែក</div>
+            <div style="font-size: 11px; color: var(--text-muted);">ផ្ញើ Link ទៅកាន់អ្នកដទៃបើកភ្លាមៗ</div>
+          </div>
+        </div>
+
+        <!-- Import Template File -->
+        <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 8px 0;">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <span style="font-size: 12px; color: var(--text-muted);">បើកគំរូចាស់ដែលបានរក្សាទុក (.json) ៖</span>
+          <button type="button" class="btn btn-outline btn-sm" id="btn-import-json">
+            <span>📂</span> ជ្រើសរើសឯកសារ JSON
+          </button>
+          <input type="file" id="input-import-json-hidden" accept=".json" style="display: none;">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" data-close="modal-export">បិទ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 4: SUBJECT EDITOR (ADD / EDIT) -->
+  <div class="modal-overlay" id="modal-subject">
+    <div class="modal-card" style="max-width: 540px;">
+      <div class="modal-header">
+        <div class="modal-title" id="subject-modal-title"><span>📚</span> កែសម្រួលមុខវិជ្ជា</div>
+        <button type="button" class="modal-close-btn" data-close="modal-subject">✕</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="input-subject-id" value="">
+
+        <!-- Subject Name (Khmer) -->
+        <div class="form-group">
+          <label class="form-label" for="input-subject-name">ឈ្មោះមុខវិជ្ជា (ភាសាខ្មែរ) * ៖</label>
+          <input type="text" class="form-control" id="input-subject-name" placeholder="ឧ. រូបវិទ្យា, គីមីវិទ្យា, ភូមិវិទ្យា...">
+        </div>
+
+        <!-- Subtitle / English -->
+        <div class="form-group">
+          <label class="form-label" for="input-subject-subtitle">ចំណងជើងរង / អង់គ្លេស (Subtitle) ៖</label>
+          <input type="text" class="form-control" id="input-subject-subtitle" placeholder="ឧ. Physics, Chemistry, Geography...">
+        </div>
+
+        <!-- Icon / Emoji -->
+        <div class="form-group">
+          <label class="form-label">រូបសញ្ញាសម្គាល់ (Icon / Emoji) ៖</label>
+          <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 6px;">
+            <input type="text" class="form-control" id="input-subject-icon" value="📚" style="width: 60px; text-align: center; font-size: 24px; padding: 4px;">
+            <span style="font-size: 11px; color: var(--text-muted);">ចុច Emoji ខាងក្រោម ឬវាយបញ្ចូលដោយផ្ទាល់</span>
+          </div>
+          <div class="quick-emoji-picker" id="emoji-picker-container" style="display: flex; gap: 6px; flex-wrap: wrap;">
+            <button type="button" class="btn-emoji-pick">📚</button>
+            <button type="button" class="btn-emoji-pick">📐</button>
+            <button type="button" class="btn-emoji-pick">📝</button>
+            <button type="button" class="btn-emoji-pick">✍️</button>
+            <button type="button" class="btn-emoji-pick">🔬</button>
+            <button type="button" class="btn-emoji-pick">🌍</button>
+            <button type="button" class="btn-emoji-pick">🔤</button>
+            <button type="button" class="btn-emoji-pick">🎨</button>
+            <button type="button" class="btn-emoji-pick">🕊️</button>
+            <button type="button" class="btn-emoji-pick">⭐</button>
+            <button type="button" class="btn-emoji-pick">💻</button>
+            <button type="button" class="btn-emoji-pick">🏃‍♂️</button>
+            <button type="button" class="btn-emoji-pick">🧪</button>
+            <button type="button" class="btn-emoji-pick">⚛️</button>
+            <button type="button" class="btn-emoji-pick">📜</button>
+            <button type="button" class="btn-emoji-pick">🗺️</button>
+            <button type="button" class="btn-emoji-pick">💡</button>
+            <button type="button" class="btn-emoji-pick">🎵</button>
+            <button type="button" class="btn-emoji-pick">🏆</button>
+            <button type="button" class="btn-emoji-pick">📖</button>
+          </div>
+        </div>
+
+        <!-- Theme Color & Frame Style -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-group">
+            <label class="form-label">ពណ៌ចម្បង (Theme Color) ៖</label>
+            <div class="color-picker-row">
+              <input type="color" class="color-input" id="input-subject-color" value="#1565c0">
+              <span id="subject-color-hex" style="font-size: 12px; font-weight: 700;">#1565c0</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="select-subject-frame">ម៉ូតស៊ុមក្រប ៖</label>
+            <select class="form-control" id="select-subject-frame">
+              <!-- Populated via FRAME_STYLES -->
+            </select>
+          </div>
+        </div>
+
+        <!-- Font Family Selector -->
+        <div class="form-group">
+          <label class="form-label" for="select-subject-font">ពុម្ពអក្សរឈ្មោះមុខវិជ្ជា ៖</label>
+          <select class="form-control" id="select-subject-font">
+            <!-- Populated via FontManager -->
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer" style="justify-content: space-between;">
+        <button type="button" class="btn btn-outline" id="btn-delete-subject" style="display: none; border-color: #ef4444; color: #ef4444;">
+          <span>🗑️</span> លុបមុខវិជ្ជានេះ
+        </button>
+        <div style="display: flex; gap: 8px; margin-left: auto;">
+          <button type="button" class="btn btn-outline" data-close="modal-subject">បោះបង់</button>
+          <button type="button" class="btn btn-gold" id="btn-save-subject">
+            <span>💾</span> រក្សាទុក
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 5: 3D TEXT STYLES GALLERY (30 STYLES) -->
+  <div class="modal-overlay" id="modal-3d-styles">
+    <div class="modal-card" style="max-width: 960px; max-height: 90vh;">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title"><span>✨</span> បណ្ណាល័យម៉ូតអក្សរ 3D ទាំង ៣០ ម៉ូត (30 Ultra 3D Styles Gallery)</div>
+          <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
+            រចនាឡើងពិសេសសម្រាប់អក្សរខ្មែរ មាសរាជវាំង ទទឹម មរកត ត្បូងកណ្តៀង នីអុង និងថ្មបុរាណអង្គរ
+          </div>
+        </div>
+        <button type="button" class="modal-close-btn" data-close="modal-3d-styles">✕</button>
+      </div>
+
+      <!-- Category Filter Tabs -->
+      <div style="display: flex; gap: 8px; padding: 10px 24px; overflow-x: auto; border-bottom: 1px solid var(--border-color); flex-shrink: 0; background: var(--bg-secondary);">
+        <button type="button" class="btn btn-sm btn-outline tab-3d-cat active" data-cat="all">ទាំងអស់ (All 30)</button>
+        <button type="button" class="btn btn-sm btn-outline tab-3d-cat" data-cat="gold">👑 មាស &amp; ក្រូម (Gold)</button>
+        <button type="button" class="btn btn-sm btn-outline tab-3d-cat" data-cat="gem">💎 ត្បូងរាជ (Gems)</button>
+        <button type="button" class="btn btn-sm btn-outline tab-3d-cat" data-cat="heritage">🏛️ កេរដំណែលខ្មែរ (Heritage)</button>
+        <button type="button" class="btn btn-sm btn-outline tab-3d-cat" data-cat="pop">🍬 ពណ៌ស្រស់ឆើត (Pop)</button>
+        <button type="button" class="btn btn-sm btn-outline tab-3d-cat" data-cat="cyber">⚡ សាយប័រនីអុង (Cyber)</button>
+        <button type="button" class="btn btn-sm btn-outline tab-3d-cat" data-cat="elegant">🌸 ទន់ភ្លន់ស្រស់ស្អាត (Elegant)</button>
+      </div>
+
+      <div class="modal-body" style="overflow-y: auto; padding: 18px 24px; flex: 1;">
+        <!-- 30 Styles Cards Grid -->
+        <div id="container-3d-cards" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px;">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </div>
+
+      <div class="modal-footer" style="justify-content: space-between;">
+        <div style="font-size: 12px; color: var(--text-gold); font-weight: 600;">
+          💡 ចុចលើកាតដើម្បីដាក់ម៉ូត 3D លើស្រទាប់អក្សរដែលកំពុងជ្រើសរើស ឬចុច "ដាក់លើទាំងអស់"
+        </div>
+        <button type="button" class="btn btn-outline" data-close="modal-3d-styles">បិទផ្ទាំង (Close)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 6: KHMER A4 PRINT STUDIO (ប្លង់បោះពុម្ពលើក្រដាស A4) -->
+  <div class="modal-overlay" id="modal-two-subjects-a4">
+    <div class="modal-card" style="max-width: 1040px; max-height: 94vh; display: flex; flex-direction: column;">
+      
+      <!-- Modal Header -->
+      <div class="modal-header" style="padding: 12px 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
+        <div class="modal-title" style="color: #fbbf24; font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 18px;">🖨️</span> ប្លង់បោះពុម្ពលើក្រដាស A4 (KHMER A4 PRINT STUDIO)
+        </div>
+        <button type="button" class="modal-close-btn" data-close="modal-two-subjects-a4">✕</button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body" style="overflow-y: auto; padding: 14px 20px; flex: 1;">
+        
+        <!-- Top Controls Container (Dark card with subtle border) -->
+        <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 12px 16px; margin-bottom: 10px;">
+          <div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px; justify-content: space-between;">
+            
+            <!-- Print Mode Dropdown -->
+            <div style="flex: 1; min-width: 320px;">
+              <label style="display: flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 600; color: #94a3b8; margin-bottom: 6px;">
+                <span>📖</span> ទម្រង់បោះពុម្ព (Print Mode) ៖
+              </label>
+              <select class="form-control" id="select-print-mode" style="background: #1e293b; color: #f8fafc; border: 1px solid #334155; font-weight: 600;">
+                <option value="all-12" selected>☀️ បោះពុម្ពទាំង ១២ មុខវិជ្ជា (៦ សន្លឹក A4 - ២ ក្របក្នុង ១ សន្លឹក)</option>
+                <option value="custom-2">📄 ជ្រើសរើស ២ មុខវិជ្ជាផ្ទាល់ខ្លួន (១ សន្លឹក A4 - ២ ក្រប)</option>
+                <option value="students-batch">👨‍🏫 បោះពុម្ពតាមបញ្ជីឈ្មោះសិស្ស (២ ក្របក្នុង ១ សន្លឹក)</option>
+                <option value="current-single">📘 បោះពុម្ពមុខវិជ្ជាបច្ចុប្បន្ន (១ សន្លឹក A4 - ២ ក្របដូចគ្នា)</option>
+              </select>
+            </div>
+
+            <!-- Margin Dropdown -->
+            <div style="width: 220px;">
+              <label style="display: block; font-size: 11.5px; font-weight: 600; color: #94a3b8; margin-bottom: 6px;">
+                គម្លាតគែម (Margin) ៖
+              </label>
+              <select class="form-control" id="select-print-margin" style="background: #1e293b; color: #f8fafc; border: 1px solid #334155;">
+                <option value="8" selected>ស្តង់ដារ (Standard 8mm)</option>
+                <option value="0">គ្មានគែម (Zero / Borderless 0mm)</option>
+                <option value="4">តូច (Narrow 4mm)</option>
+                <option value="15">ធំទូលាយ (Wide 15mm)</option>
+              </select>
+            </div>
+
+            <!-- Show Cut Line Checkbox -->
+            <div style="display: flex; align-items: center; padding-bottom: 8px;">
+              <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; cursor: pointer; color: #f59e0b; user-select: none;">
+                <input type="checkbox" id="check-print-cutline" checked style="width: 17px; height: 17px; accent-color: #f59e0b;">
+                <span>✂️ បង្ហាញបន្ទាត់កាត់</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Sub-panel for Custom 2 Subjects Mode -->
+          <div id="box-custom-2sub-controls" style="display: none; margin-top: 12px; padding-top: 12px; border-top: 1px dashed rgba(255, 255, 255, 0.1);">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+              <div>
+                <label style="font-size: 11px; color: #10b981; font-weight: 700;">មុខវិជ្ជាទី ១ (ឆ្វេង / Left) ៖</label>
+                <select class="form-control" id="select-a4-sub1" style="margin-top: 4px;"></select>
+              </div>
+              <div>
+                <label style="font-size: 11px; color: #3b82f6; font-weight: 700;">មុខវិជ្ជាទី ២ (ស្ដាំ / Right) ៖</label>
+                <select class="form-control" id="select-a4-sub2" style="margin-top: 4px;"></select>
+              </div>
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px;" id="container-a4-quick-pairs"></div>
+          </div>
+        </div>
+
+        <!-- Blue Status Info Pill Bar -->
+        <div style="background: rgba(30, 58, 138, 0.22); border: 1px solid rgba(59, 130, 246, 0.35); border-radius: 6px; padding: 7px 16px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; font-size: 11px; font-weight: 600; color: #cbd5e1; margin-bottom: 12px;">
+          <span>📄 ទំហំ ៖ A4</span>
+          <span>📐 ទិសដៅ ៖ Landscape (ផ្ដេក)</span>
+          <span>📐 Margins ៖ None ឬ Default</span>
+          <span>🎨 Background graphics ៖ បើក (Checked)</span>
+        </div>
+
+        <!-- Sheet Indicator & Navigation Bar -->
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+          <button type="button" class="btn btn-sm btn-outline" id="btn-a4-prev-page" style="padding: 3px 12px; font-size: 11.5px;">◀ ថយក្រោយ</button>
+          <div id="txt-a4-sheet-indicator" style="font-size: 13.5px; font-weight: 700; color: #fbbf24;">
+            សន្លឹក A4 ទី ១ / ៦
+          </div>
+          <button type="button" class="btn btn-sm btn-outline" id="btn-a4-next-page" style="padding: 3px 12px; font-size: 11.5px;">ទៅមុខ ▶</button>
+        </div>
+
+        <!-- Paper Preview Viewport (Landscape A4 container) -->
+        <div style="display: flex; justify-content: center; align-items: center; padding: 12px; background: rgba(0, 0, 0, 0.35); border-radius: 8px;">
+          <div id="container-a4-live-preview" style="background: #ffffff; width: 100%; max-width: 860px; aspect-ratio: 297/210; border-radius: 4px; box-shadow: 0 10px 36px rgba(0, 0, 0, 0.6); position: relative; overflow: hidden;">
+            <!-- Rendered SVG lives here -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer Actions -->
+      <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; border-top: 1px solid rgba(255, 255, 255, 0.08); flex-wrap: wrap; gap: 10px;">
+        <div style="font-size: 12px; font-weight: 600; color: #f59e0b; display: flex; align-items: center; gap: 6px;">
+          <span>💡</span> <span id="txt-print-footer-note">បោះពុម្ពទាំង 12 មុខវិជ្ជា (ស្មើ 6 សន្លឹក A4)</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <button type="button" class="btn btn-outline" id="btn-download-a4-hd" style="background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.2); font-weight: 600; padding: 7px 18px; font-size: 12px;">
+            <span>📥</span> ទាញយក A4 (HD Image)
+          </button>
+          <button type="button" class="btn btn-gold" id="btn-print-now-primary" style="background: #10b981; border-color: #059669; color: #ffffff; font-weight: 700; padding: 7px 22px; font-size: 12.5px; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);">
+            <span>🖨️</span> បោះពុម្ពឥឡូវនេះ (Print Now)
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dedicated Print Sandbox for Pure Vector A4 Output -->
+  <div id="print-sandbox-root"></div>
+
+  <!-- Scripts -->
+  <script src="js/khmer-graphics.js"></script>
+  <script src="js/back-cover-presets.js"></script>
+  <script src="js/fonts-data.js"></script>
+  <script src="js/presets-data.js"></script>
+  <script src="js/text-3d-styles.js"></script>
+  <script src="js/canvas-engine.js"></script>
+  <script src="js/batch-generator.js"></script>
+  <script src="js/two-subjects-a4.js"></script>
+  <script src="js/template-storage.js"></script>
+  <script src="js/app.js"></script>
+</body>
+
+</html>
+
